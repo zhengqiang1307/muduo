@@ -28,6 +28,8 @@ class TestNoDestroy : muduo::noncopyable
 {
  public:
   // Tag member for Singleton<T>
+  // destruction would not be executed by Singleton<T>
+  // my lead memory leak
   void no_destroy();
 
   TestNoDestroy()

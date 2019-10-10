@@ -22,8 +22,10 @@ namespace detail
 template<typename T>
 struct has_no_destroy
 {
+  // c++11之前，typeof(&C::no_destroy)
   template <typename C> static char test(decltype(&C::no_destroy));
   template <typename C> static int32_t test(...);
+  // test<T>(0)，函数调用，首先是类，并且有no_destroy成员函数，则value是true
   const static bool value = sizeof(test<T>(0)) == 1;
 };
 }  // namespace detail
@@ -37,6 +39,7 @@ class Singleton : noncopyable
 
   static T& instance()
   {
+    // &Singleton::init只会被调用一次
     pthread_once(&ponce_, &Singleton::init);
     assert(value_ != NULL);
     return *value_;
@@ -45,7 +48,10 @@ class Singleton : noncopyable
  private:
   static void init()
   {
+    // 堆内存线程共享
     value_ = new T();
+    // 当参数是类且没有"no_destroy"方法才会注册atexit的destroy
+    // 自动销毁T
     if (!detail::has_no_destroy<T>::value)
     {
       ::atexit(destroy);
@@ -54,6 +60,7 @@ class Singleton : noncopyable
 
   static void destroy()
   {
+    //用typedef定义了一个数组类型，数组的大小不能为-1，利用这个方法，如果是不完全类型，编译阶段就会发现错误
     typedef char T_must_be_complete_type[sizeof(T) == 0 ? -1 : 1];
     T_must_be_complete_type dummy; (void) dummy;
 

@@ -41,6 +41,7 @@ void benchmark()
     }
     else if (inc < 100)
     {
+      // mark 0 ~ 99 delta's times of happen
       ++increments[inc];
     }
     else

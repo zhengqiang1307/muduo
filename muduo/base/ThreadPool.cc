@@ -56,8 +56,11 @@ void ThreadPool::stop()
   running_ = false;
   notEmpty_.notifyAll();
   }
+  // if thread has task then get it done
+  // if not, quit directly
   for (auto& thr : threads_)
   {
+    // wait to collect threads' resource
     thr->join();
   }
 }
