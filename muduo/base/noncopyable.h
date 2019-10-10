@@ -7,8 +7,8 @@ namespace muduo
 class noncopyable
 {
  public:
-  noncopyable(const noncopyable&) = delete;
-  void operator=(const noncopyable&) = delete;
+  noncopyable(const noncopyable&) = delete; // copy ctor
+  void operator=(const noncopyable&) = delete;// copy assignment
 
  protected:
   noncopyable() = default;
